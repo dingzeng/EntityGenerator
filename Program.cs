@@ -257,7 +257,7 @@ namespace EntityGenerator
                     var attributeName = col.PrimaryKeyType == PrimaryKeyType.AutoIncrement ? "Key" : "ExplicitKey";
                     builder.AppendLine($"\t\t[{attributeName}]");
                 }
-                var typeName = GetTypeName(col.DataType, col.IsPrimaryKey);
+                var typeName = GetTypeName(col.DataType, col.IsNullable);
                 var propName = GetClassOrPropertyName(col.ColumnName);
                 builder.AppendLine($"\t\tpublic {typeName} {propName} {{ get; set; }}");
                 builder.AppendLine();
