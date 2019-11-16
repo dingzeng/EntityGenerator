@@ -29,7 +29,14 @@ namespace EntityGenerator
             var tables = GetColumnInfos(param);
 
             Console.WriteLine("开始生成:");
+
             GenerateEntityFiles(tables, param.OutputPath, param.Namespace);
+
+            if (!string.IsNullOrEmpty(param.ProtoFileOutputPath))
+            {
+                GenerateGrpcDTOMessage(tables, param.ProtoFileOutputPath);
+            }
+
             Console.WriteLine("生成完成，按任意键退出...");
 
             Console.ReadKey();
@@ -162,6 +169,18 @@ namespace EntityGenerator
                 }
             }
 
+            // proto
+            if (source.TryGetValue("--proto", out string proto))
+            {
+                commandLineParameterInfo.ProtoFileOutputPath = output;
+            }
+            else
+            {
+                Console.Write("请输入proto文件路径(为空则不生成)：");
+                var input = Console.ReadLine();
+                commandLineParameterInfo.ProtoFileOutputPath = input;
+            }
+
             return commandLineParameterInfo;
         }
 
@@ -232,6 +251,19 @@ namespace EntityGenerator
             }
         }
 
+        private static void GenerateGrpcDTOMessage(Dictionary<string, List<ColumnInfo>> tables, string outputPath)
+        {
+            StringBuilder builder = new StringBuilder();
+            foreach (var table in tables)
+            {
+                var code = GetGrpcMessageCode(table.Key, table.Value);
+                builder.AppendLine(code);
+            }
+            var filename = File.Exists(outputPath) ? outputPath : Path.GetFullPath(outputPath);
+            File.WriteAllText(filename, builder.ToString());
+            Console.WriteLine($"Grpc messages ok");
+        }
+
         private static string GetEntityClassCode(string tableName, string classNamespace, List<ColumnInfo> columns)
         {
             string className = GetClassOrPropertyName(tableName);
@@ -247,8 +279,9 @@ namespace EntityGenerator
             builder.AppendLine($"\t[Table(\"{tableName}\")]");
             builder.AppendLine($"\tpublic class {className} : Entity");
             builder.AppendLine("\t{");
-            foreach (var col in columns)
+            for (int i = 0; i < columns.Count; i++)
             {
+                var col = columns[i];
                 builder.AppendLine("\t\t/// <summary>");
                 builder.AppendLine($"\t\t/// {col.Comment}");
                 builder.AppendLine("\t\t/// <summary>");
@@ -257,14 +290,33 @@ namespace EntityGenerator
                     var attributeName = col.PrimaryKeyType == PrimaryKeyType.AutoIncrement ? "Key" : "ExplicitKey";
                     builder.AppendLine($"\t\t[{attributeName}]");
                 }
-                var typeName = GetTypeName(col.DataType, col.IsNullable);
+                var typeName = GetClassTypeName(col.DataType, col.IsNullable);
                 var propName = GetClassOrPropertyName(col.ColumnName);
                 builder.AppendLine($"\t\tpublic {typeName} {propName} {{ get; set; }}");
-                builder.AppendLine();
+                if (i != columns.Count - 1)
+                {
+                    builder.AppendLine();
+                }
             }
             builder.AppendLine("\t}");
             builder.AppendLine("}");
 
+            return builder.ToString();
+        }
+
+        private static string GetGrpcMessageCode(string tableName, List<ColumnInfo> columns)
+        {
+            string className = GetClassOrPropertyName(tableName);
+            StringBuilder builder = new StringBuilder();
+            builder.AppendLine($"message {className}DTO {{");
+            for (int i = 0; i < columns.Count; i++)
+            {
+                var col = columns[i];
+                var typeName = GetProtoTypeName(col.DataType);
+                var propName = GetClassOrPropertyName(col.ColumnName);
+                builder.AppendLine($"\t{typeName} {propName} = {i + 1};");
+            }
+            builder.AppendLine("}");
             return builder.ToString();
         }
 
@@ -280,7 +332,7 @@ namespace EntityGenerator
             return char.ToUpper(newSource[0]) + newSource.Substring(1);
         }
 
-        private static string GetTypeName(string columnType, bool isNullable)
+        private static string GetClassTypeName(string columnType, bool isNullable)
         {
             switch (columnType)
             {
@@ -306,6 +358,21 @@ namespace EntityGenerator
                 case "datetime": return isNullable ? "DateTime?" : "DateTime";
             }
             return string.Empty;
+        }
+
+        private static string GetProtoTypeName(string columnType)
+        {
+            switch (columnType)
+            {
+                case "tinyint":
+                case "smallint":
+                case "int": return "int32";
+                case "timestamp":
+                case "bigint": return "int64";
+                case "double": return "double";
+                case "float": return "float";
+                default: return "string";
+            }
         }
     }
 }

@@ -1,0 +1,19 @@
+[
+    {
+        "server": "192.168.0.102",
+        "port": 33306,
+        "uid": "root",
+        "password": "123456",
+        "databases": [
+            {
+                "db": "db_tripod_archive",
+                "output": "C:\\Code\\github\\dingzeng\\Tripod\\Services\\src\\Tripod.Service.Archive\\Model",
+                "protoFile": "C:\\Code\\github\\dingzeng\\Tripod\\Services\\protos\\dtos.archive.proto",
+                "namespace": "Tripod.Service.Archive.Model"
+            },
+            {
+
+            }
+        ]
+    }
+]
