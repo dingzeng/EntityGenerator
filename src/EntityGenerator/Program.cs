@@ -17,26 +17,32 @@ namespace EntityGenerator
             if (args == null || args.Length < 1 || string.IsNullOrEmpty(args[0]))
             {
                 Console.WriteLine("缺少参数");
+                return;
             }
 
-            // var configFilePath = args[0];
-            var configFilePath = "/home/jerry/code/EntityGenerator/src/EntityGenerator/tasks0.json";
+            var configFilePath = args[0];
+            if (!File.Exists(configFilePath))
+            {
+                Console.WriteLine("指定的文件不存在");
+                return;
+            }
+
             var configContent = File.ReadAllText(configFilePath);
             var options = JsonConvert.DeserializeObject<List<ConnectionInfo>>(configContent);
-
-            Console.Write(JsonConvert.SerializeObject(options));
 
             Console.WriteLine("开始生成:");
             foreach (var opt in options)
             {
                 foreach (var p in opt.Projects)
                 {
+                    Console.WriteLine($"-----------------Database:{p.Database},Tables:{p.Table}--------------------------------");
                     var tables = GetColumnInfos(opt.Server, opt.Port, opt.UserId, opt.Password, p.Database, p.Table);
                     GenerateEntityFiles(tables, p.Output, p.Namespace);
                     if (!string.IsNullOrEmpty(p.ProtoFile))
                     {
-                        GenerateGrpcDTOMessage(tables, p.ProtoFile);
+                        GenerateGrpcDTOMessage(tables, p.ProtoFile, p.Namespace);
                     }
+                    Console.WriteLine();
                 }
             }
             Console.WriteLine("生成完成，按任意键退出...");
@@ -103,40 +109,56 @@ namespace EntityGenerator
             {
                 var code = GetEntityClassCode(table.Key, classNamespace, table.Value);
                 var className = GetClassOrPropertyName(table.Key);
-                var path = Directory.Exists(outputPath) ? outputPath : Path.GetFullPath(outputPath);
-                var filename = Path.Combine(path, $"{className}.cs");
+
+                if (!Directory.Exists(outputPath))
+                {
+                    Directory.CreateDirectory(outputPath);
+                }
+                var filename = Path.Combine(outputPath, $"{className}.Generated.cs");
                 File.WriteAllText(filename, code);
-                Console.WriteLine($"{table.Key} ok");
+                Console.WriteLine($"Entity Class: {table.Key}");
             }
         }
 
-        private static void GenerateGrpcDTOMessage(Dictionary<string, List<ColumnInfo>> tables, string outputPath)
+        private static void GenerateGrpcDTOMessage(Dictionary<string, List<ColumnInfo>> tables, string outputPath, string csharpNamespace)
         {
+            var now = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
             StringBuilder builder = new StringBuilder();
+            builder.AppendLine("/*");
+            builder.AppendLine("\t本文件代码由代码生成工具自动生成，请不要手动修改");
+            builder.AppendLine("\t生成时间：" + now);
+            builder.AppendLine("*/");
+            builder.AppendLine("syntax = \"proto3\";");
+            builder.AppendLine($"option csharp_namespace = \"{csharpNamespace}\";");
+            builder.AppendLine();
             foreach (var table in tables)
             {
                 var code = GetGrpcMessageCode(table.Key, table.Value);
                 builder.AppendLine(code);
+                Console.WriteLine($"Grpc Message: {table.Key}");
             }
-            var filename = File.Exists(outputPath) ? outputPath : Path.GetFullPath(outputPath);
-            File.WriteAllText(filename, builder.ToString());
-            Console.WriteLine($"Grpc messages ok");
+            File.WriteAllText(outputPath, builder.ToString());
         }
 
         private static string GetEntityClassCode(string tableName, string classNamespace, List<ColumnInfo> columns)
         {
+            var now = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
             string className = GetClassOrPropertyName(tableName);
             StringBuilder builder = new StringBuilder();
+            builder.AppendLine("/*");
+            builder.AppendLine("\t本文件代码由代码生成工具自动生成，请不要手动修改");
+            builder.AppendLine("\t生成时间：" + now);
+            builder.AppendLine("*/");
 
             builder.AppendLine("using System;");
             builder.AppendLine("using Tripod.Framework.DapperExtentions.Attributes;");
             builder.AppendLine("using Tripod.Framework.Common;");
             builder.AppendLine();
 
-            builder.AppendLine($"namespace {classNamespace}");
+            builder.AppendLine($"namespace {classNamespace}.Model");
             builder.AppendLine("{");
             builder.AppendLine($"\t[Table(\"{tableName}\")]");
-            builder.AppendLine($"\tpublic class {className} : Entity");
+            builder.AppendLine($"\tpublic partial class {className} : Entity");
             builder.AppendLine("\t{");
             for (int i = 0; i < columns.Count; i++)
             {

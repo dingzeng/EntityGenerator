@@ -1,0 +1,35 @@
+[
+    {
+        "server": "192.168.0.102",
+        "port": 33306,
+        "userid": "root",
+        "password": "123456",
+        "projects": [
+            {
+                "database": "db_tripod_archive",
+                "table": "*",
+                "output": "C:\\Code\\github\\dingzeng\\Tripod\\Services\\src\\Tripod.Service.Archive\\Model\\Generated",
+                "protoFile": "C:\\Code\\github\\dingzeng\\Tripod\\Services\\protos\\archive.dtos.proto",
+                "namespace": "Tripod.Service.Archive"
+            },{
+                "database": "db_tripod_purchase",
+                "table": "*",
+                "output": "C:\\Code\\github\\dingzeng\\Tripod\\Services\\src\\Tripod.Service.Purchase\\Model\\Generated",
+                "protoFile": "C:\\Code\\github\\dingzeng\\Tripod\\Services\\protos\\purchase.dtos.proto",
+                "namespace": "Tripod.Service.Purchase"
+            },{
+                "database": "db_tripod_stock",
+                "table": "*",
+                "output": "C:\\Code\\github\\dingzeng\\Tripod\\Services\\src\\Tripod.Service.Stock\\Model\\Generated",
+                "protoFile": "C:\\Code\\github\\dingzeng\\Tripod\\Services\\protos\\stock.dtos.proto",
+                "namespace": "Tripod.Service.Stock"
+            },{
+                "database": "db_tripod_system",
+                "table": "*",
+                "output": "C:\\Code\\github\\dingzeng\\Tripod\\Services\\src\\Tripod.Service.System\\Model\\Generated",
+                "protoFile": "C:\\Code\\github\\dingzeng\\Tripod\\Services\\protos\\system.dtos.proto",
+                "namespace": "Tripod.Service.System"
+            }
+        ]
+    }
+]
