@@ -14,15 +14,17 @@ namespace EntityGenerator
     {
         static void Main(string[] args)
         {
-            if (args == null || args.Length < 2 || string.IsNullOrEmpty(args[1]))
+            if (args == null || args.Length < 1 || string.IsNullOrEmpty(args[0]))
             {
                 Console.WriteLine("缺少参数");
             }
 
-            // var configFilePath = args[1];
-            var configFilePath = "/home/jerry/code/EntityGenerator/src/EntityGenerator/task0.json";
+            // var configFilePath = args[0];
+            var configFilePath = "/home/jerry/code/EntityGenerator/src/EntityGenerator/tasks0.json";
             var configContent = File.ReadAllText(configFilePath);
             var options = JsonConvert.DeserializeObject<List<ConnectionInfo>>(configContent);
+
+            Console.Write(JsonConvert.SerializeObject(options));
 
             Console.WriteLine("开始生成:");
             foreach (var opt in options)

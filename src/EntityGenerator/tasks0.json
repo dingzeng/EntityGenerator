@@ -6,28 +6,28 @@
         "password": "Admin123!",
         "projects": [
             {
-                "database": "db_tripod_archive",
+                "database": "d_tripod_archive",
                 "table": "*",
                 "output": "/home/jerry/code/Tripod/Services/src/Tripod.Service.Archive/Model",
                 "protoFile": "/home/jerry/code/Tripod/Services/protos/archive_dto.txt",
                 "namespace": "Tripod.Service.Archive.Model"
             },
             {
-                "database": "db_tripod_purchase",
+                "database": "d_tripod_purchase",
                 "table": "*",
                 "output": "/home/jerry/code/Tripod/Services/src/Tripod.Service.Purchase/Model",
                 "protoFile": "/home/jerry/code/Tripod/Services/protos/purchase_dto.txt",
                 "namespace": "Tripod.Service.Purchase.Model"
             },
             {
-                "database": "db_tripod_stock",
+                "database": "d_tripod_stock",
                 "table": "*",
                 "output": "/home/jerry/code/Tripod/Services/src/Tripod.Service.Stock/Model",
                 "protoFile": "/home/jerry/code/Tripod/Services/protos/stock_dto.txt",
                 "namespace": "Tripod.Service.Stock.Model"
             },
             {
-                "database": "db_tripod_system",
+                "database": "d_tripod_system",
                 "table": "*",
                 "output": "/home/jerry/code/Tripod/Services/src/Tripod.Service.System/Model",
                 "protoFile": "/home/jerry/code/Tripod/Services/protos/system_dto.txt",
