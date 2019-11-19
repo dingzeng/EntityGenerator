@@ -1,5 +1,5 @@
 # EntityGenerator
-C# database entity code generator
+代码生成工具（实体模型、用于Grpc的消息模型）
 
 # 使用说明:
 
@@ -15,23 +15,47 @@ CREATE TABLE `menu` (
 ENGINE = InnoDB;
 ```
 
+### 添加配置文件(tasks.json)
+```JSON
+[
+    {
+        "server": "192.168.0.0",
+        "port": 3306,
+        "userid": "root",
+        "password": "",
+        "projects": [
+            {
+                "database": "数据库名称",
+                "table": "*",
+                "output": "实体类输出路径",
+                "protoFile": "proto文件路径",
+                "namespace": "项目程序集根命名空间"
+            }
+        ]
+    }
+]
+```
+
 ### 运行效果
 ```
-请输入数据库服务器地址(默认为：localhost):192.168.0.102
-请输入数据库服务器端口号(默认为为:3306):33306
-请输入数据库用户名:root
-请输入数据库密码:123456
-请输入数据库名称:db_tripod_system
-请输入要生成的表名称(为空将生成数据库中所有的表):menu
-请输入类命名空间：Tripod.Service.System.Model
-请输入输出目录路径(默认为当前工作目录)：
+dotnet run .\tasks.json
 开始生成:
-menu ok
+-----------------Database:db_tripod_archive,Tables:*--------------------------------
+Entity Class: branch
+Entity Class: branch_group
+Grpc Message: branch
+Grpc Message: branch_group
+
 生成完成，按任意键退出...
 ```
 
-### 生成内容
+### 生成的实体类
+
 ```CSHARP
+/*
+	本文件代码由代码生成工具自动生成，请不要手动修改
+	生成时间：2019-11-19 21:17:28
+*/
 using System;
 using Tripod.Framework.DapperExtentions.Attributes;
 using Tripod.Framework.Common;
@@ -39,7 +63,7 @@ using Tripod.Framework.Common;
 namespace Tripod.Service.System.Model
 {
 	[Table("menu")]
-	public class Menu : Entity
+	public partial class Menu : Entity
 	{
 		/// <summary>
 		/// 编码
@@ -70,10 +94,27 @@ namespace Tripod.Service.System.Model
 }
 ```
 
+### 生成的Grpc消息模型
+```
+/*
+	本文件代码由代码生成工具自动生成，请不要手动修改
+	生成时间：2019-11-19 21:17:28
+*/
+syntax = "proto3";
+option csharp_namespace = "Tripod.Service.System";
+
+message MenuDTO {
+	string Code = 1;
+	string ParentCode = 2;
+	string Path = 3;
+	string Name = 4;
+	int32 IsLeaf = 5;
+}
+```
+
 ## TODOLIST
 
 - 支持各种数据库（目前只支持MySql数据库）
-- 支持按配置文件批量生成（避免繁琐的参数输入）
 - 更灵活的输出配置
 	- 自定义表名、列名到类名、属性名映射
 	- 类文件模板支持
