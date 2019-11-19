@@ -6,6 +6,7 @@ using System.Data;
 using System.IO;
 using System.Text.RegularExpressions;
 using MySql.Data.MySqlClient;
+using Newtonsoft.Json;
 
 namespace EntityGenerator
 {
@@ -13,190 +14,46 @@ namespace EntityGenerator
     {
         static void Main(string[] args)
         {
-            var param = ParseCommandLineParameterInfo(args);
-            // var param = new CommandLineParameterInfo()
-            // {
-            //     Server = "192.168.0.102",
-            //     Database = "db_tripod_archive",
-            //     Table = "branch",
-            //     Port = 33306,
-            //     UserId = "root",
-            //     Password = "123456",
-            //     OutputPath = "../",
-            //     Namespace = "Tripod.Service.System.Model"
-            // };
-
-            var tables = GetColumnInfos(param);
-
-            Console.WriteLine("开始生成:");
-
-            GenerateEntityFiles(tables, param.OutputPath, param.Namespace);
-
-            if (!string.IsNullOrEmpty(param.ProtoFileOutputPath))
+            if (args == null || args.Length < 2 || string.IsNullOrEmpty(args[1]))
             {
-                GenerateGrpcDTOMessage(tables, param.ProtoFileOutputPath);
+                Console.WriteLine("缺少参数");
             }
 
-            Console.WriteLine("生成完成，按任意键退出...");
+            // var configFilePath = args[1];
+            var configFilePath = "/home/jerry/code/EntityGenerator/src/EntityGenerator/task0.json";
+            var configContent = File.ReadAllText(configFilePath);
+            var options = JsonConvert.DeserializeObject<List<ConnectionInfo>>(configContent);
 
+            Console.WriteLine("开始生成:");
+            foreach (var opt in options)
+            {
+                foreach (var p in opt.Projects)
+                {
+                    var tables = GetColumnInfos(opt.Server, opt.Port, opt.UserId, opt.Password, p.Database, p.Table);
+                    GenerateEntityFiles(tables, p.Output, p.Namespace);
+                    if (!string.IsNullOrEmpty(p.ProtoFile))
+                    {
+                        GenerateGrpcDTOMessage(tables, p.ProtoFile);
+                    }
+                }
+            }
+            Console.WriteLine("生成完成，按任意键退出...");
             Console.ReadKey();
         }
 
-        private static CommandLineParameterInfo ParseCommandLineParameterInfo(string[] args)
-        {
-            Dictionary<string, string> source = new Dictionary<string, string>();
-            for (int i = 0; i < args.Length; i += 2)
-            {
-                if (args.Length > i + 1)
-                {
-                    source.Add(args[i], args[i + 1]);
-                }
-            }
-
-            var commandLineParameterInfo = new CommandLineParameterInfo();
-            if (source.TryGetValue("--server", out string server))
-            {
-                commandLineParameterInfo.Server = server;
-            }
-            else
-            {
-                Console.Write("请输入数据库服务器地址(默认为：localhost):");
-                var input = Console.ReadLine();
-                if (string.IsNullOrEmpty(input))
-                {
-                    commandLineParameterInfo.Server = "localhost";
-                }
-                else
-                {
-                    commandLineParameterInfo.Server = input;
-                }
-            }
-
-            // port
-            if (source.TryGetValue("--port", out string port))
-            {
-                commandLineParameterInfo.Port = Convert.ToInt32(port);
-            }
-            else
-            {
-                Console.Write("请输入数据库服务器端口号(默认为为:3306):");
-                var input = Console.ReadLine();
-                if (string.IsNullOrEmpty(input))
-                {
-                    commandLineParameterInfo.Port = 3306;
-                }
-                else
-                {
-                    commandLineParameterInfo.Port = Convert.ToInt32(input);
-                }
-            }
-
-            // uid
-            if (source.TryGetValue("--uid", out string uid))
-            {
-                commandLineParameterInfo.UserId = uid;
-            }
-            else
-            {
-                Console.Write("请输入数据库用户名:");
-                var input = Console.ReadLine();
-                commandLineParameterInfo.UserId = input;
-            }
-
-            // pwd
-            if (source.TryGetValue("--pwd", out string pwd))
-            {
-                commandLineParameterInfo.Password = pwd;
-            }
-            else
-            {
-                Console.Write("请输入数据库密码:");
-                var input = Console.ReadLine();
-                commandLineParameterInfo.Password = input;
-            }
-
-            // database
-            if (source.TryGetValue("--database", out string database))
-            {
-                commandLineParameterInfo.Database = database;
-            }
-            else
-            {
-                Console.Write("请输入数据库名称:");
-                var input = Console.ReadLine();
-                commandLineParameterInfo.Database = input;
-            }
-
-            if (source.TryGetValue("--table", out string table))
-            {
-                commandLineParameterInfo.Table = table;
-            }
-            else
-            {
-                Console.Write("请输入要生成的表名称(为空将生成数据库中所有的表):");
-                commandLineParameterInfo.Table = Console.ReadLine();
-            }
-
-            // namespace
-            if (source.TryGetValue("--namespace", out string classNamespace))
-            {
-                commandLineParameterInfo.Namespace = classNamespace;
-            }
-            else
-            {
-                Console.Write("请输入类命名空间：");
-                var input = Console.ReadLine();
-                commandLineParameterInfo.Namespace = input;
-            }
-
-            // output
-            if (source.TryGetValue("--output", out string output))
-            {
-                commandLineParameterInfo.OutputPath = output;
-            }
-            else
-            {
-                Console.Write("请输入输出目录路径(默认为当前工作目录)：");
-                var input = Console.ReadLine();
-                if (string.IsNullOrEmpty(input))
-                {
-
-                    commandLineParameterInfo.OutputPath = "./";
-                }
-                else
-                {
-                    commandLineParameterInfo.OutputPath = input;
-                }
-            }
-
-            // proto
-            if (source.TryGetValue("--proto", out string proto))
-            {
-                commandLineParameterInfo.ProtoFileOutputPath = output;
-            }
-            else
-            {
-                Console.Write("请输入proto文件路径(为空则不生成)：");
-                var input = Console.ReadLine();
-                commandLineParameterInfo.ProtoFileOutputPath = input;
-            }
-
-            return commandLineParameterInfo;
-        }
-
-        private static Dictionary<string, List<ColumnInfo>> GetColumnInfos(CommandLineParameterInfo info)
+        private static Dictionary<string, List<ColumnInfo>> GetColumnInfos(string server, int port, string userId, string password, string database, string table)
         {
             var result = new Dictionary<string, List<ColumnInfo>>();
 
-            var connectionString = $"database={info.Database};server={info.Server};uid={info.UserId};pwd={info.Password};port={info.Port};";
+            var connectionString = $"database={database};server={server};uid={userId};pwd={password};port={port};";
             using (IDbConnection conn = new MySqlConnection(connectionString))
             {
                 conn.Open();
                 var command = conn.CreateCommand();
-                string condition = $"WHERE TABLE_SCHEMA = '{info.Database}' ";
-                if (!string.IsNullOrEmpty(info.Table))
+                string condition = $"WHERE TABLE_SCHEMA = '{database}' ";
+                if (!string.IsNullOrEmpty(table) && table != "*")
                 {
-                    condition += $"AND TABLE_NAME = '{info.Table}'";
+                    condition += $"AND TABLE_NAME = '{table}'";
                 }
                 command.CommandText = $"SELECT * FROM `information_schema`.`COLUMNS` {condition} ORDER BY ORDINAL_POSITION";
 
