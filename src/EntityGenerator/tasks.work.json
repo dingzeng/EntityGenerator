@@ -1,33 +1,33 @@
 [
     {
-        "server": "192.168.215.201",
+        "server": "127.0.0.1",
         "port": 3306,
         "userid": "root",
-        "password": "Admin123!",
+        "password": "123456",
         "projects": [
             {
-                "database": "d_tripod_archive",
+                "database": "db_tripod_archive",
                 "table": "*",
                 "output": "/home/jerry/code/Tripod/Services/src/Tripod.Service.Archive/Model/Generated",
                 "protoFile": "/home/jerry/code/Tripod/Services/protos/archive.dtos.proto",
                 "namespace": "Tripod.Service.Archive"
             },
             {
-                "database": "d_tripod_purchase",
+                "database": "db_tripod_purchase",
                 "table": "*",
                 "output": "/home/jerry/code/Tripod/Services/src/Tripod.Service.Purchase/Model/Generated",
                 "protoFile": "/home/jerry/code/Tripod/Services/protos/purchase.dtos.proto",
                 "namespace": "Tripod.Service.Purchase"
             },
             {
-                "database": "d_tripod_stock",
+                "database": "db_tripod_stock",
                 "table": "*",
                 "output": "/home/jerry/code/Tripod/Services/src/Tripod.Service.Stock/Model/Generated",
                 "protoFile": "/home/jerry/code/Tripod/Services/protos/stock.dtos.proto",
                 "namespace": "Tripod.Service.Stock"
             },
             {
-                "database": "d_tripod_system",
+                "database": "db_tripod_system",
                 "table": "*",
                 "output": "/home/jerry/code/Tripod/Services/src/Tripod.Service.System/Model/Generated",
                 "protoFile": "/home/jerry/code/Tripod/Services/protos/system.dtos.proto",
