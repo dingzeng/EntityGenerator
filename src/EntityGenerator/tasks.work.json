@@ -8,29 +8,29 @@
             {
                 "database": "db_tripod_archive",
                 "table": "*",
-                "output": "/home/jerry/code/Tripod/Services/src/Tripod.Service.Archive/Model/Generated",
-                "protoFile": "/home/jerry/code/Tripod/Services/protos/archive.dtos.proto",
+                "output": "/home/jerry/code/Tripod/src/Tripod.Service.Archive/Model/Generated",
+                "protoFile": "/home/jerry/code/Tripod.Protos/archive_dtos.proto",
                 "namespace": "Tripod.Service.Archive"
             },
             {
                 "database": "db_tripod_purchase",
                 "table": "*",
-                "output": "/home/jerry/code/Tripod/Services/src/Tripod.Service.Purchase/Model/Generated",
-                "protoFile": "/home/jerry/code/Tripod/Services/protos/purchase.dtos.proto",
+                "output": "/home/jerry/code/Tripod/src/Tripod.Service.Purchase/Model/Generated",
+                "protoFile": "/home/jerry/code/Tripod.Protos/purchase_dtos.proto",
                 "namespace": "Tripod.Service.Purchase"
             },
             {
                 "database": "db_tripod_stock",
                 "table": "*",
-                "output": "/home/jerry/code/Tripod/Services/src/Tripod.Service.Stock/Model/Generated",
-                "protoFile": "/home/jerry/code/Tripod/Services/protos/stock.dtos.proto",
+                "output": "/home/jerry/code/Tripod/src/Tripod.Service.Stock/Model/Generated",
+                "protoFile": "/home/jerry/code/Tripod.Protos/stock_dtos.proto",
                 "namespace": "Tripod.Service.Stock"
             },
             {
                 "database": "db_tripod_system",
                 "table": "*",
-                "output": "/home/jerry/code/Tripod/Services/src/Tripod.Service.System/Model/Generated",
-                "protoFile": "/home/jerry/code/Tripod/Services/protos/system.dtos.proto",
+                "output": "/home/jerry/code/Tripod/src/Tripod.Service.System/Model/Generated",
+                "protoFile": "/home/jerry/code/Tripod.Protos/system_dtos.proto",
                 "namespace": "Tripod.Service.System"
             }
         ]
