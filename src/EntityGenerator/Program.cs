@@ -122,11 +122,9 @@ namespace EntityGenerator
 
         private static void GenerateGrpcDTOMessage(Dictionary<string, List<ColumnInfo>> tables, string outputPath, string csharpNamespace)
         {
-            var now = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
             StringBuilder builder = new StringBuilder();
             builder.AppendLine("/*");
             builder.AppendLine("\t本文件代码由代码生成工具自动生成，请不要手动修改");
-            builder.AppendLine("\t生成时间：" + now);
             builder.AppendLine("*/");
             builder.AppendLine("syntax = \"proto3\";");
             builder.AppendLine($"option csharp_namespace = \"{csharpNamespace}\";");
@@ -142,12 +140,10 @@ namespace EntityGenerator
 
         private static string GetEntityClassCode(string tableName, string classNamespace, List<ColumnInfo> columns)
         {
-            var now = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
             string className = GetClassOrPropertyName(tableName);
             StringBuilder builder = new StringBuilder();
             builder.AppendLine("/*");
             builder.AppendLine("\t本文件代码由代码生成工具自动生成，请不要手动修改");
-            builder.AppendLine("\t生成时间：" + now);
             builder.AppendLine("*/");
 
             builder.AppendLine("using System;");
