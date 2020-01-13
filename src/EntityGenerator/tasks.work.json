@@ -1,6 +1,6 @@
 [
     {
-        "server": "127.0.0.1",
+        "server": "192.168.215.15",
         "port": 3306,
         "userid": "root",
         "password": "123456",
@@ -8,29 +8,15 @@
             {
                 "database": "db_tripod_archive",
                 "table": "*",
-                "output": "/home/jerry/code/Tripod/src/Tripod.Service.Archive/Model/Generated",
-                "protoFile": "/home/jerry/code/Tripod.Protos/archive_dtos.proto",
+                "output": "D:\\Projects\\github\\dingzeng\\Tripod\\src\\Tripod.Service.Archive\\Model\\Generated",
+                "protoFile": "D:\\Projects\\github\\dingzeng\\Tripod\\protos\\archive_dtos.proto",
                 "namespace": "Tripod.Service.Archive"
-            },
-            {
-                "database": "db_tripod_purchase",
-                "table": "*",
-                "output": "/home/jerry/code/Tripod/src/Tripod.Service.Purchase/Model/Generated",
-                "protoFile": "/home/jerry/code/Tripod.Protos/purchase_dtos.proto",
-                "namespace": "Tripod.Service.Purchase"
-            },
-            {
-                "database": "db_tripod_stock",
-                "table": "*",
-                "output": "/home/jerry/code/Tripod/src/Tripod.Service.Stock/Model/Generated",
-                "protoFile": "/home/jerry/code/Tripod.Protos/stock_dtos.proto",
-                "namespace": "Tripod.Service.Stock"
             },
             {
                 "database": "db_tripod_system",
                 "table": "*",
-                "output": "/home/jerry/code/Tripod/src/Tripod.Service.System/Model/Generated",
-                "protoFile": "/home/jerry/code/Tripod.Protos/system_dtos.proto",
+                "output": "D:\\Projects\\github\\dingzeng\\Tripod\\src\\Tripod.Service.System\\Model\\Generated",
+                "protoFile": "D:\\Projects\\github\\dingzeng\\Tripod\\protos\\system_dtos.proto",
                 "namespace": "Tripod.Service.System"
             }
         ]

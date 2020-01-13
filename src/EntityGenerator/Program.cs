@@ -246,6 +246,7 @@ namespace EntityGenerator
                 case "int": return "int32";
                 case "timestamp":
                 case "bigint": return "int64";
+                case "decimal": 
                 case "double": return "double";
                 case "float": return "float";
                 default: return "string";
